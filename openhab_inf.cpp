@@ -43,11 +43,18 @@ void openhab_inf::on_message(const struct mosquitto_message *message)
 	if(message!=NULL){
   	
   	saved_msg* temp = new saved_msg;
-  	
-  	strcpy(temp->topic, (char*)message->topic);
-  	strcpy(temp->payload, (char*)message->payload);
-  	
-  	command_produce(temp);
+  	//std::cout << message->topic << "\n";
+  	int len = strlen(message->topic);
+  	//printf("%c%c%c\n", message->topic[len-3], message->topic[len-2], message->topic[len-1]);
+  	  
+  	if (message->topic[len-3] == 'c' && message->topic[len-2] == 'o' && message->topic[len-1] == 'm'){//only send command
+  	  
+    	message->topic[len-4] = 0;
+    	strcpy(temp->topic, (char*)message->topic);
+    	strcpy(temp->payload, (char*)message->payload);
+    	
+    	command_produce(temp);
+    }
   	
   }
   else{ //test
@@ -96,7 +103,10 @@ void openhab_inf::status_consume(){
           std::cout << "<openhab_inf> payload from sta queue: " << s->payload << "\n";
             
           //TODO: send the status to the openhab.
-          
+          int ret = publish(NULL, s->topic, strlen(s->payload), s->payload);
+          if ( ret != MOSQ_ERR_SUCCESS ) {
+            throw std::runtime_error("Publish error!");
+          }
           
           delete s;
           

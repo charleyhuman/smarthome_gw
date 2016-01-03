@@ -177,7 +177,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
       
 #if RF24_TESTING
 
-      std::this_thread::sleep_for (std::chrono::milliseconds(1000));//simulate recving...    
+      std::this_thread::sleep_for (std::chrono::milliseconds(100));//simulate recving...    
 
 #else
 

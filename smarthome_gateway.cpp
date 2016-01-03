@@ -146,7 +146,7 @@ void sensors_main (Queue<saved_msg*>& cmd_q, Queue<saved_msg*>& sta_q) //fetch d
   
 }
 
-void guard_main ()
+void guardian_main ()
 {
 	while(!signaled){
 	  std::this_thread::sleep_for (std::chrono::milliseconds(100));
@@ -164,10 +164,10 @@ int main(int argc, char *argv[])
   
   std::thread openhab_thread (openhab_main, std::ref(command_queue), std::ref(status_queue));
   std::thread sensors_thread (sensors_main, std::ref(command_queue), std::ref(status_queue));
-  std::thread guard_thread (guard_main); //used for thread synchronization
+  std::thread guardian_thread (guardian_main); //used for thread synchronization
   //std::thread command_consumer_thread (command_consumer);
     
-  guard_thread.join(); //wait until this dummy thread end.
+  guardian_thread.join(); //wait until this dummy thread end.
   
   //g_queuecheck.notify_one();
 

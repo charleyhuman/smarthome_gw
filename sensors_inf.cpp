@@ -121,8 +121,14 @@ void sensors_inf::command_consume(){
           m_ra->send(tx);
           saved_msg* temp = new saved_msg;
           
-        	strcpy(temp->topic, "test/topic/haha/hehe/1");
-        	strcpy(temp->payload, "1");
+        	strcpy(temp->topic, "/home/bedr/p1/1/state");
+        	if (tx.status==1){
+        	  strcpy(temp->payload, "ON");
+        	}
+      	  else {
+        	  strcpy(temp->payload, "OFF");
+      	  }
+        	    
           
           status_produce(temp);
           
