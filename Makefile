@@ -1,5 +1,6 @@
-CXXFLAGS= -std=c++11 -Wall -g -I/usr/include/ -I/usr/local/include
-LDFLAGS=-L/usr/lib/x86_64-linux-gnu -lmosquittopp -lmosquitto -L/usr/local/lib -lrf24
+CXXFLAGS= -std=c++11 -Wall -g
+LDFLAGS=-lmosquittopp -lmosquitto -lrf24 -lpthread
+CXX=g++-4.9
 
 .PHONY: all clean
 

@@ -143,7 +143,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
       }
       else
       {
-        memset(&tx, sizeof(sensor_msg), 0);
+        memset(&tx, 0, sizeof(sensor_msg));
         m_radio.read( &tx, sizeof(sensor_msg) );
         printf("<rf24> Got id %u...",tx.id);
         printf("<rf24> Got subid %u...",tx.subid);
