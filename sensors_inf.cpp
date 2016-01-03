@@ -37,17 +37,17 @@ void sensors_inf::loop()
     sensor_msg rx;
     
     m_ra->recv(rx);
-    saved_msg* temp = new saved_msg;
-    
-  	strcpy(temp->topic, "test/topic/haha/hehe/1");
-  	strcpy(temp->payload, "0");
-    
-    status_produce(temp);
+//    saved_msg* temp = new saved_msg;
+//    
+//  	strcpy(temp->topic, "test/topic/haha/hehe/1");
+//  	strcpy(temp->payload, "0");
+//    
+//    status_produce(temp);
   }
   catch (std::exception& e){
       std::cout << e.what() << std::endl;
   }    
-    
+  std::this_thread::sleep_for (std::chrono::milliseconds(10));
 }
 
 //void sensors_inf::operator()(int n) { 

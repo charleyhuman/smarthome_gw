@@ -107,7 +107,7 @@ void openhab_main (Queue<saved_msg*>& cmd_q, Queue<saved_msg*>& sta_q) //fetch d
 	int rc = 0;
 
 	mosqpp::lib_init();
-	class openhab_inf openhab(NULL, "localhost", 1883, cmd_q, sta_q);
+	class openhab_inf openhab(NULL, "192.168.1.3", 1883, cmd_q, sta_q);
   //static int i = 0;
 	
 	while(!signaled){

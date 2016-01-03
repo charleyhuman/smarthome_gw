@@ -1,6 +1,5 @@
 CXXFLAGS= -std=c++11 -Wall -g
 LDFLAGS=-lmosquittopp -lmosquitto -lrf24 -lpthread
-CXX=g++-4.9
 
 .PHONY: all clean
 

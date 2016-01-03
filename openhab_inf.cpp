@@ -31,7 +31,7 @@ void openhab_inf::on_connect(int rc)
 	printf("<openhab_inf> Connected with code %d.\n", rc);
 	if(rc == 0){
 		/* Only attempt to subscribe on a successful connect. */
-		subscribe(NULL, "hello/world");
+		subscribe(NULL, "/home/#");
 	}
 }
 

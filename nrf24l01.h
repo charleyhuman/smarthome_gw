@@ -90,6 +90,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
       std::cout << "<rf24>  status: " << static_cast<unsigned>(tx.status) << "\n"; 
         
       //std::this_thread::sleep_for (std::chrono::seconds(1));//simulate sending...
+      std::cout << "<rf24> try to acquire the lock in send()... \n";
       std::unique_lock<std::mutex> lock(m_mtx);
       std::cout << "<rf24> waiting in send()... \n";
       m_cond.wait(lock, [&](){ return !m_isbusy || m_isProgramStopped; });
@@ -103,7 +104,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
 
 #if RF24_TESTING
 
-      std::this_thread::sleep_for (std::chrono::seconds(1));//simulate sending...    
+      std::this_thread::sleep_for (std::chrono::milliseconds(100));//simulate sending...    
 
 #else
 
@@ -162,10 +163,11 @@ class rf24module : public radio  //consumer for command queue, and producer for 
 
     void recv(sensor_msg& rx)
     {
+      //std::cout << "<rf24> try to acquire the lock in recv()... \n";
       std::unique_lock<std::mutex> lock(m_mtx);
-      std::cout << "<rf24> waiting in recv()... \n";
+      //std::cout << "<rf24> waiting in recv()... \n";
       m_cond.wait(lock, [&](){ return !m_isbusy || m_isProgramStopped; });
-      std::cout << "<rf24> got the lock... \n";
+      //std::cout << "<rf24> got the lock... \n";
       
       if (m_isProgramStopped){
           throw std::runtime_error("Program stopped in rf24 recv!");
@@ -175,7 +177,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
       
 #if RF24_TESTING
 
-      std::this_thread::sleep_for (std::chrono::seconds(1));//simulate recving...    
+      std::this_thread::sleep_for (std::chrono::milliseconds(1000));//simulate recving...    
 
 #else
 
@@ -211,11 +213,11 @@ class rf24module : public radio  //consumer for command queue, and producer for 
         m_radio.startListening();
       }
 #endif      
-      std::cout << "<rf24> recv done... \n";
+      //std::cout << "<rf24> recv done... \n";
 
       m_isbusy = false;
       m_cond.notify_one();
-      std::cout << "<rf24> recv() quit... \n";
+      //std::cout << "<rf24> recv() quit... \n";
       
     }
     
