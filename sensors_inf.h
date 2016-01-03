@@ -27,7 +27,7 @@ class sensors_inf //consumer for command queue, and producer for status queue
 		~sensors_inf();
 //		operator()(int n);
 
-		void on_message(const sensor_msg *message);
+//		void on_message(const sensor_msg *message);
 		void loop();
 	private:	
     Queue<saved_msg*>& cmd_q;//consumer

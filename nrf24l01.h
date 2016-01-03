@@ -185,15 +185,15 @@ class rf24module : public radio  //consumer for command queue, and producer for 
       if ( m_radio.available() )
       {
         // Dump the payloads until we've gotten everything
-        unsigned long got_time;
+        unsigned char err = 0;
         bool done = false;
         while (!done)
         {
           // Fetch the payload, and see if this was the last one.
-          done = m_radio.read( &got_time, sizeof(unsigned long) );
+          done = m_radio.read( &rx, sizeof(sensor_msg) );
   
           // Spew it
-          printf("<rf24> Got payload %lu...",got_time);
+          //printf("<rf24> Got payload %lu...",got_time);
   
   	// Delay just a little bit to let the other unit
   	// make the transition to receiver
@@ -205,7 +205,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
   
         // Send the final one back.
         printf("<rf24> Sent response.\n\r");
-        m_radio.write( &got_time, sizeof(unsigned long) );
+        m_radio.write( &err, sizeof(unsigned char) );
   
         // Now, resume listening so we catch the next packets.
         m_radio.startListening();

@@ -2,8 +2,8 @@
 #define CONFIG_H
 
 
-#define RF24_TESTING 1
-#define OPENHAB_TESTING 1
+#define RF24_TESTING 0
+#define OPENHAB_TESTING 0
 
 
 

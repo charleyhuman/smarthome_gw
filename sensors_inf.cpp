@@ -64,8 +64,8 @@ void sensors_inf::loop()
 //    } 
 //} 
 
-void sensors_inf::on_message(const sensor_msg *message)
-{
+//void sensors_inf::on_message(const sensor_msg *message)
+//{
 //	double temp_celsius, temp_farenheit;
 //	char buf[51];
 	
@@ -82,7 +82,7 @@ void sensors_inf::on_message(const sensor_msg *message)
 //		snprintf(buf, 50, "%f", temp_farenheit);
 //		publish(NULL, "temperature/farenheit", strlen(buf), buf);
 //	}
-}
+//}
 
 
 void sensors_inf::command_consume(){
