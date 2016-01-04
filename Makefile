@@ -1,4 +1,4 @@
-CXXFLAGS= -std=c++11 -Wall -g
+CXXFLAGS= -std=c++11 #-Wall -g
 LDFLAGS=-lmosquittopp -lmosquitto -lrf24 -lpthread
 
 .PHONY: all clean

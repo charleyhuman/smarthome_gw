@@ -12,13 +12,13 @@ class db
     unsigned char queryid(char* addr) //by addr
     {
       unsigned char id;
-      id = 13; //TODO, query sqlite by addr
+      id = 1; //TODO, query sqlite by addr
       return id;
     }
     
-    void queryaddr(unsigned char id, char* addr) //by id
+    void queryaddr(unsigned char id, unsigned char subid, char* addr) //by id
     {
-      sprintf(addr, "test/test/test");//TODO, query sqlite by id
+      sprintf(addr, "/home/bedr/p1/%u/state", subid);//TODO, query sqlite by id
 
     }	 
     

@@ -29,7 +29,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
     //  radio.setPayloadSize(8);
       m_radio.setChannel(0x70); //2400 + 112 MHz = 2.512 GHz
       m_radio.setPALevel(RF24_PA_MAX);
-      //radio.setDataRate(RF24_250KBPS);
+      //m_radio.setDataRate(RF24_250KBPS);
     
       //
       // Open pipes to other nodes for communication
@@ -161,7 +161,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
         
     }
 
-    void recv(sensor_msg& rx)
+    signed char recv(sensor_msg& rx)
     {
       //std::cout << "<rf24> try to acquire the lock in recv()... \n";
       std::unique_lock<std::mutex> lock(m_mtx);
@@ -181,13 +181,13 @@ class rf24module : public radio  //consumer for command queue, and producer for 
 
 #else
 
-      m_radio.startListening();
+      //m_radio.startListening();
+      char err = -1;
 
       // if there is data ready
       if ( m_radio.available() )
       {
         // Dump the payloads until we've gotten everything
-        unsigned char err = 0;
         bool done = false;
         while (!done)
         {
@@ -196,6 +196,9 @@ class rf24module : public radio  //consumer for command queue, and producer for 
   
           // Spew it
           //printf("<rf24> Got payload %lu...",got_time);
+        printf("<rf24> Got id %u...",rx.id);
+        printf("<rf24> Got subid %u...",rx.subid);
+        printf("<rf24> Got status %u...\n\r",rx.status);
   
   	// Delay just a little bit to let the other unit
   	// make the transition to receiver
@@ -204,10 +207,10 @@ class rf24module : public radio  //consumer for command queue, and producer for 
   
         // First, stop listening so we can talk
         m_radio.stopListening();
-  
+        err = 0;
         // Send the final one back.
         printf("<rf24> Sent response.\n\r");
-        m_radio.write( &err, sizeof(unsigned char) );
+        m_radio.write( &err, sizeof(char) );
   
         // Now, resume listening so we catch the next packets.
         m_radio.startListening();
@@ -218,6 +221,7 @@ class rf24module : public radio  //consumer for command queue, and producer for 
       m_isbusy = false;
       m_cond.notify_one();
       //std::cout << "<rf24> recv() quit... \n";
+      return err;
       
     }
     

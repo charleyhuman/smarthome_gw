@@ -30,59 +30,35 @@ sensors_inf::~sensors_inf()
 
 void sensors_inf::loop()
 {
+  signed char err;
   try{
     //std::this_thread::sleep_for (std::chrono::milliseconds(100));
     //std::this_thread::sleep_for (std::chrono::seconds(1));
     
     sensor_msg rx;
     
-    m_ra->recv(rx);
-//    saved_msg* temp = new saved_msg;
-//    
-//  	strcpy(temp->topic, "test/topic/haha/hehe/1");
-//  	strcpy(temp->payload, "0");
-//    
-//    status_produce(temp);
+    err = m_ra->recv(rx);
+        
+    if (err != -1) {
+      saved_msg* temp = new saved_msg;
+      
+    	//strcpy(temp->topic, "/home/bedr/p1/1/state");
+    	m_db.queryaddr(rx.id, rx.subid, temp->topic);
+    	if (rx.status==1){
+    	  strcpy(temp->payload, "ON");
+    	}
+  	  else {
+    	  strcpy(temp->payload, "OFF");
+  	  }
+      
+      status_produce(temp);
+    }
   }
   catch (std::exception& e){
       std::cout << e.what() << std::endl;
   }    
-  std::this_thread::sleep_for (std::chrono::milliseconds(10));
+  std::this_thread::sleep_for (std::chrono::milliseconds(5));
 }
-
-//void sensors_inf::operator()(int n) { 
-//    while(true) { 
-//        std::unique_lock<std::mutex> l(_m); 
-//        _c.wait(l); 
-//        if(!_q.empty()) { 
-//            { 
-//                std::unique_lock<std::mutex> l(_mm); 
-//                std::cerr << "#" << n << " " << _q.back() <<std::endl; 
-//            } 
-//            _q.pop(); 
-//        } 
-//    } 
-//} 
-
-//void sensors_inf::on_message(const sensor_msg *message)
-//{
-//	double temp_celsius, temp_farenheit;
-//	char buf[51];
-	
-	//printf("on message %s\n", (char*)message->topic);
-	//printf("on message %s\n", (char*)message->payload);
-
-//	if(!strcmp(message->topic, "temperature/celsius")){
-//		memset(buf, 0, 51*sizeof(char));
-//		/* Copy N-1 bytes to ensure always 0 terminated. */
-//		memcpy(buf, message->payload, 50*sizeof(char));
-//		temp_celsius = atof(buf);
-//		//printf("celsius: %f\n", temp_celsius);
-//		temp_farenheit = temp_celsius*9.0/5.0 + 32.0;
-//		snprintf(buf, 50, "%f", temp_farenheit);
-//		publish(NULL, "temperature/farenheit", strlen(buf), buf);
-//	}
-//}
 
 
 void sensors_inf::command_consume(){
@@ -96,7 +72,7 @@ void sensors_inf::command_consume(){
           s = cmd_q.pop();
           std::cout << "<sensors_inf> topic from cmd queue: " << s->topic << "\n";
           std::cout << "<sensors_inf> payload from cmd queue: " << s->payload << "\n";
-            
+          
           //TODO: parse the command and send it to the sensors.
           
           memset(&tx, 0, sizeof(sensor_msg));
@@ -107,7 +83,8 @@ void sensors_inf::command_consume(){
           m_par.parse(topic, addr, tx.subid);
           
           std::cout << "<sensors_inf>  addr: " << addr << "\n"; 
-          tx.id = m_db.queryid(addr);
+          tx.id = m_db.queryid(addr);//id is the short name of address (e.g. /home/bedr/xxx)
+          //subid is the id of a specific device (e.g. in /home/bedr/xxx/1, 1 is the subid)
           tx.status = atoi(s->payload);
           
 //          std::cout << " id: " << static_cast<unsigned>(tx.id) << "\n"; //this is the way to cout a char

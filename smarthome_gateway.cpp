@@ -3,10 +3,15 @@
 #include <cstring>
 #include <signal.h>
 #include <atomic>
+#include <queue>
+#include <random>
 
 #include "openhab_inf.h"
 #include "sensors_inf.h"
 #include "config.h"
+
+#include "radio.h"
+#include "nrf24l01.h"
 
 using namespace std;
 
@@ -25,81 +30,6 @@ void install_sig_hooks() {
   action.sa_flags = SA_SIGINFO;
   sigaction(SIGINT, &action, NULL);
 }
-
-#include <queue>
-#include <random>
-
-//std::mutex              g_lockprint;
-//std::mutex              g_lockqueue;
-//std::condition_variable g_queuecheck;
-//std::queue<int>         g_codes;
-//bool                    g_done;
-//bool                    g_notified;
-//
-//void command_producer(int id)
-//{
-//    // print a starting message
-//    {
-//        //std::unique_lock<std::mutex> locker(g_lockprint);
-//        //std::cout << "[producer " << id << "]\trunning..." << std::endl;
-//    }
-//
-//    // simulate work
-//    //std::this_thread::sleep_for(std::chrono::seconds(1 + generator() % 5));
-//
-//    // simulate error
-//    int errorcode = id;
-//    {
-//        //std::unique_lock<std::mutex> locker(g_lockprint);
-//        std::cout << "[producer " << id << "]\tan error occurred: " << errorcode << std::endl;
-//    }
-//
-//    // notify error to be logged
-//    {
-//        cout << "[producer]\ttry to get the lock\n";
-//        std::unique_lock<std::mutex> locker(g_lockqueue);
-//        cout << "[producer]\tget the lock\n";
-//        g_codes.push(errorcode);
-//        g_queuecheck.notify_one();
-//    }
-//}
-//
-//void command_consumer()
-//{
-//    // print a starting message
-//    {
-//        //std::unique_lock<std::mutex> locker(g_lockprint);
-//        //std::cout << "[consumer]\trunning..." << std::endl;
-//    }
-//
-//    // loop until end is signaled
-//    while(!signaled)
-//    {
-//        std::unique_lock<std::mutex> locker(g_lockqueue);
-//        cout<< "[consumer]\t waiting...\n";
-//        g_queuecheck.wait(locker, [&](){return !g_codes.empty() || signaled;});
-//        cout<< "[consumer]\t wakes up...\n";
-//
-//        // if there are error codes in the queue process them
-//        if(!g_codes.empty())
-//        {
-//            //std::unique_lock<std::mutex> locker(g_lockprint);
-//            std::cout << "[consumer]\tprocessing error:  " << g_codes.front() << std::endl;
-//            g_codes.pop();
-//            locker.unlock();
-//            std::this_thread::sleep_for (std::chrono::milliseconds(500));
-//        }
-//    }
-//    while(!g_codes.empty())
-//    {
-//        //std::unique_lock<std::mutex> locker(g_lockprint);
-//        std::cout << "[consumer]\tprocessing error:  " << g_codes.front() << std::endl;
-//        g_codes.pop();
-//        //locker.unlock();
-//        std::this_thread::sleep_for (std::chrono::milliseconds(500));
-//    }
-//}
-
 
 
 void openhab_main (Queue<saved_msg*>& cmd_q, Queue<saved_msg*>& sta_q) //fetch data from openhub
@@ -129,8 +59,6 @@ void openhab_main (Queue<saved_msg*>& cmd_q, Queue<saved_msg*>& sta_q) //fetch d
 }
 
 
-
-
 void sensors_main (Queue<saved_msg*>& cmd_q, Queue<saved_msg*>& sta_q) //fetch data from sensors
 {
   class sensors_inf sensors(cmd_q, sta_q);// adding () is not correct!
@@ -154,13 +82,16 @@ void guardian_main ()
 	
 }
 
+
+
 int main(int argc, char *argv[])
 {
+                   
   signaled = false;
+  install_sig_hooks();
+  
   Queue<saved_msg*> command_queue;
   Queue<saved_msg*> status_queue;
-
-  install_sig_hooks();
   
   std::thread openhab_thread (openhab_main, std::ref(command_queue), std::ref(status_queue));
   std::thread sensors_thread (sensors_main, std::ref(command_queue), std::ref(status_queue));
@@ -177,6 +108,7 @@ int main(int argc, char *argv[])
   openhab_thread.join(); 
   sensors_thread.join(); 
   //command_consumer_thread.join();
+
   
   cout << "<main> main thread quit\n";
    
