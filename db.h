@@ -18,7 +18,7 @@ class db
     
     void queryaddr(unsigned char id, unsigned char subid, char* addr) //by id
     {
-      sprintf(addr, "/home/bedr/p1/%u/state", subid);//TODO, query sqlite by id
+      sprintf(addr, "/home/strip1/%u/state", subid);//TODO, query sqlite by id
 
     }	 
     

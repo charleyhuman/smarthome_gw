@@ -43,7 +43,9 @@ void sensors_inf::loop()
       saved_msg* temp = new saved_msg;
       
     	//strcpy(temp->topic, "/home/bedr/p1/1/state");
+    	printf("rx.id: %u, rx.subid: %u\n", rx.id, rx.subid);
     	m_db.queryaddr(rx.id, rx.subid, temp->topic);
+    	printf("temp->topic %s\n", temp->topic);
     	if (rx.status==1){
     	  strcpy(temp->payload, "ON");
     	}
@@ -98,7 +100,10 @@ void sensors_inf::command_consume(){
           m_ra->send(tx);
           saved_msg* temp = new saved_msg;
           
-        	strcpy(temp->topic, "/home/bedr/p1/1/state");
+        	//strcpy(temp->topic, "/home/strip1/1/state");
+        	printf("rx.id: %u, rx.subid: %u\n", tx.id, tx.subid);
+        	m_db.queryaddr(tx.id, tx.subid, temp->topic);
+        	printf("temp->topic %s\n", temp->topic);
         	if (tx.status==1){
         	  strcpy(temp->payload, "ON");
         	}
